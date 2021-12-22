@@ -14,11 +14,15 @@ services:
       - 8000:8000
 
 #_Telegram_bot__________________________________________
-  # ml_bot:
-  #   container_name: nsfw_bot
-  #   build: /ML_Bot/.
-  #   ports:
-  #     - 8001:8000
+  ml_bot:
+    container_name: nsfw_bot
+    build: /ML_Bot/.
+
+  bot_scylla_db:
+    container_name: scylla_db
+    image: scylladb/scylla
+    ports:
+      - 
 
 
   # images_dwnld_service:
