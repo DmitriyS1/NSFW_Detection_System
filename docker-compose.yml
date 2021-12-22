@@ -2,11 +2,6 @@ version: "3"
 
 services:
 #_Classifier____________________________________________
-  # nsfw_classifier_load_balancer:
-  #   container_name: classifier_load_balancer
-  #   image: nginx
-
-
   nsfw_classifier_service:
     container_name: nsfw_classifier
     build: /NSFW_Classifier_Service/.
@@ -14,21 +9,23 @@ services:
       - 8000:8000
 
 #_Telegram_bot__________________________________________
-  # ml_bot:
-  #   container_name: nsfw_bot
-  #   build: /ML_Bot/.
-  #   ports:
-  #     - 8001:8000
+  ml_bot:
+    container_name: nsfw_bot
+    build: /ML_Bot/.
+    depends_on: 
+      - bot_database
 
+  bot_database:
+    image: postgres:latest
+    container_name: mlbot_db
+    environment:
+      - POSTGRES_DB=ml_bot
+      - POSTGRES_USER=back
+      - POSTGRES_PASSWORD=aHR!##9887ASDsda
+    ports:
+      - 5444:5432
+    volumes:
+      - ml_bot_data:/var/lib/postgresql/data
 
-  # images_dwnld_service:
-  #   container_name: images_download_service
-  #   build: /Images_Downloader_Service/.
-  #   ports:
-  #     - 8002:8000
-
-  # banned_links_service:
-  #   build: /Banned_Links_Service/.
-  #   container_name: ban_service
-  #   ports:
-  #     - 8003:8000
+volumes:
+  ml_bot_data:
