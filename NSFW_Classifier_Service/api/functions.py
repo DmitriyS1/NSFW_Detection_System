@@ -7,7 +7,7 @@ MAX_IMAGE_SIZE = MAX_IMAGE_SIZE * 1000000
 
 
 async def download_image(url):
-    file_name = f"{randint(6969, 6999)}.jpg"
+    file_name = f"{randint(6600, 6999)}.jpg"
     async with aiohttp.ClientSession() as session:
         async with session.get(url) as resp:
             if resp.status == 200:
