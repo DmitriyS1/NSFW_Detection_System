@@ -9,8 +9,8 @@ from bot_messages import BotMessages
 from notifier import notifier
 
 
-# API_TOKEN = '618909382:AAEMG0jXMgDTGm6eCxwCwzFFUWZ9RodyVdM' # 4d_test
-API_TOKEN = '1885273122:AAHSUzWGpu5OCB2C9WXcEwFF8RCt87AnIaw' # first_job
+API_TOKEN = '618909382:AAEMG0jXMgDTGm6eCxwCwzFFUWZ9RodyVdM' # 4d_test
+#API_TOKEN = '1885273122:AAHSUzWGpu5OCB2C9WXcEwFF8RCt87AnIaw' # first_job
 # print("Token from config: ", config['bot_token'])
 
 bot = Bot(token=API_TOKEN)

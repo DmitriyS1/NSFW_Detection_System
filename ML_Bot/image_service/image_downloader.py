@@ -14,8 +14,8 @@ async def download_image(urls):
                 if resp.status == 200:
                     if int(resp.headers['Content-Length']) > MAX_IMAGE_SIZE:
                         return False
-                    f = await aiofiles.open(file_name, mode='wb')
-                    await f.write(await resp.read())
+                    # f = await aiofiles.open(file_name, mode='wb')
+                    result = await session.post() f.write(await resp.read()) # send to queue? send over http to classifier?
                     await f.close()
                 else:
                     return False
