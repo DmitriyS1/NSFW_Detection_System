@@ -6,12 +6,9 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
 
-from gino import Gino
+Base = declarative_base()
 
-db = Gino()
-#Base = declarative_base()
-
-class Message(db.Model):
+class Message(Base):
     __tablename__ = "message"
 
     id = Column(Integer, primary_key=True)
@@ -26,7 +23,7 @@ class Message(db.Model):
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime)
 
-class MessageMetadata(db.Model):
+class MessageMetadata(Base):
     __tablename__ = "message_metadata"
 
     id = Column(Integer, primary_key=True)
@@ -37,7 +34,7 @@ class MessageMetadata(db.Model):
 
 
 
-class Link(db.Model):
+class Link(Base):
     __tablename__ = "link"
 
     id = Column(Integer, primary_key=True)
