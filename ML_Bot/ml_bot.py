@@ -24,9 +24,9 @@ async def send_welcome(message: types.Message):
         if find_url_regex is not None:
                 url = find_url_regex.group(0)
 
-                respnonse = requests.get(url)
+                response = requests.get(url)
                 pat = re.compile(r'<img [^>]*src="([^"]+)')
-                images = pat.findall(respnonse.text)
+                images = pat.findall(response.text)
                 
                 if images:
                         #здесь сохранить в бд и отправлять дальше по конвееру
