@@ -20,37 +20,24 @@ dp = Dispatcher(bot)
 
 @dp.message_handler()
 async def send_welcome(message: types.Message):
-        await message.answer('Hello! I\'m here')
-
         find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
-
         if find_url_regex is not None:
                 url = find_url_regex.group(0)
-                await message.answer('Found urls')
                 response = requests.get(url)
                 pat = re.compile(r'<img [^>]*src="([^"]+)')
                 images = pat.findall(response.text)
                 images = images[:10]
                 if images:
                         for i in range(len(images)):
-                                if "http" not in images[i]:
+                                if "http" not in images[i] or ".svg" in images[i]:
                                         images[i] = ''
-
-                        await message.answer('Found pictures')
                         
                         #здесь сохранить в бд и отправлять дальше по конвееру
                         images = list(filter(None, images))
                         is_nsfw = await image_downloader.is_nsfw(images)
                         
                         if is_nsfw:
-                                await message.delete()
-
-                        #await message.answer('Your message is on moderating')
-
-
-                await message.answer('Didn\'t find images')
-        else:
-                await message.answer('Ok')
+                                await bot.delete_message(message.chat.id, message.message_id)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
