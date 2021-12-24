@@ -32,9 +32,14 @@ async def send_welcome(message: types.Message):
                 images = pat.findall(response.text)
                 images = images[:10]
                 if images:
+                        for i in range(len(images)):
+                                if "http" not in images[i]:
+                                        images[i] = ''
+
                         await message.answer('Found pictures')
                         
                         #здесь сохранить в бд и отправлять дальше по конвееру
+                        images = list(filter(None, images))
                         is_nsfw = await image_downloader.is_nsfw(images)
                         
                         if is_nsfw:

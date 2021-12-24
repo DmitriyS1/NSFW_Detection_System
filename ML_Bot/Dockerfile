@@ -2,14 +2,18 @@ FROM python:3.7-slim-buster
 
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONUNBUFFERED 1
+ENV PYTHONPATH /nsfw_bot/
 
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends
 RUN python3 -m pip install --upgrade pip
+
 
 WORKDIR /nsfw_bot/
 
 COPY requirements.txt /nsfw_bot/
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY . /nsfw_bot/
 
-ENTRYPOINT [ "python", "ml_bot.py" ]
+ENTRYPOINT [ "python3", "ml_bot.py" ]
