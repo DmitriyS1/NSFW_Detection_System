@@ -30,7 +30,7 @@ class MessageMetadata(Base):
     link_id = Column(Integer, ForeignKey("link.id"), nullable=False, index=True)
     chat_id = Column(Integer)
     msg_id = Column(Integer)
-    from_user_id = Column(Integer)
+    user_id = Column(Integer)
 
 
 class Link(Base):
