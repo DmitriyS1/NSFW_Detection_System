@@ -27,6 +27,7 @@ async def send_welcome(message: types.Message):
                 response = requests.get(url)
                 pat = re.compile(r'<img [^>]*src="([^"]+)')
                 images = pat.findall(response.text)
+                images = images[:10]
                 
                 if images:
                         #здесь сохранить в бд и отправлять дальше по конвееру
