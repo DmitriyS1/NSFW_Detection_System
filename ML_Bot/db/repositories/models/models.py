@@ -6,20 +6,15 @@ from sqlalchemy.sql.schema import ForeignKey
 from sqlalchemy.dialects.postgresql import BYTEA
 from sqlalchemy.sql.sqltypes import Boolean, DateTime
 
-from gino import Gino
+Base = declarative_base()
 
-db = Gino()
-#Base = declarative_base()
-
-class Message(db.Model):
+class Message(Base):
     __tablename__ = "message"
 
     id = Column(Integer, primary_key=True)
-    text = Column(String(256))
-    link_id = Column(Integer, ForeignKey("link.id"), nullable=False, index=True)
-    chat_id = Column(Integer)
+    text = Column(String)
 
-    # username = Column(String(128), nullable=True)
+    # username = Column(String(128), nullable=True) msg msg link link
     # profession = Column(String(128))
     # programming_language = Column(String)
     # resumes = relationship("Resume", back_populates="user")
@@ -28,8 +23,18 @@ class Message(db.Model):
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime)
 
+class MessageMetadata(Base):
+    __tablename__ = "message_metadata"
 
-class Link(db.Model):
+    id = Column(Integer, primary_key=True)
+    link_id = Column(Integer, ForeignKey("link.id"), nullable=False, index=True)
+    chat_id = Column(Integer)
+    msg_id = Column(Integer)
+    from_user_id = Column(Integer)
+
+
+
+class Link(Base):
     __tablename__ = "link"
 
     id = Column(Integer, primary_key=True)

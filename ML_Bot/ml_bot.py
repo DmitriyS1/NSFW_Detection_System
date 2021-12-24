@@ -14,7 +14,6 @@ from bot_messages import BotMessages
 consult_bot_api_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'
 
 bot = Bot(token=consult_bot_api_token)
-
 dp = Dispatcher(bot)
 
 
