@@ -33,14 +33,13 @@ class MessageMetadata(Base):
     from_user_id = Column(Integer)
 
 
-
 class Link(Base):
     __tablename__ = "link"
 
     id = Column(Integer, primary_key=True)
     link = Column(String, index=True)
     created_at = Column(DateTime, nullable=False)
-
+    deleted_at = Column(DateTime)
 
     # user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
     # user = relationship("User", back_populates="resumes")
