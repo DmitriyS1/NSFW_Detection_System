@@ -29,8 +29,8 @@ class MessageMetadata(Base):
     id = Column(Integer, primary_key=True)
     link_id = Column(Integer, ForeignKey("link.id"), nullable=False, index=True)
     chat_id = Column(Integer)
-    msg_id = Column(Integer, ForeignKey("message.id"))
-    from_user_id = Column(Integer)
+    msg_id = Column(Integer, ForeignKey("message.id"), nullable=False, index=True)
+    user_id = Column(Integer)
 
 
 class Link(Base):
