@@ -1,23 +1,45 @@
-from config import MAX_IMAGE_SIZE
-from random import randint
+import asyncio
+from aiohttp.client import ClientSession
+import config
 import aiohttp
-import aiofiles
 
-MAX_IMAGE_SIZE = MAX_IMAGE_SIZE * 1000000
+MAX_IMAGE_SIZE = config.MAX_IMAGE_SIZE * 1000000
 
-#do it correct!
-async def download_image(urls):
-    file_name = f"{randint(6969, 6999)}.jpg"
-    async with aiohttp.ClientSession() as session: # to not open a lot of sessions download bunch of pics in one session
+async def is_nsfw(urls) -> bool:
+    # make request to site and get 10 images
+    async with aiohttp.ClientSession() as session:
         for url in urls:
-            async with session.get(url) as resp:
-                if resp.status == 200:
-                    if int(resp.headers['Content-Length']) > MAX_IMAGE_SIZE:
-                        return False
-                    f = await aiofiles.open(file_name, mode='wb')
-                    await f.write(await resp.read())
-                    await f.close()
-                else:
-                    return False
+            image = await download_image(url, session)
+            if len(image) > 0:
+                result = await classify_image(image)
+                if result['data']['is_nsfw']:
+                    return result['data']['is_nsfw']
+
+
+async def download_image(url, session: ClientSession) -> bytes:
+    async with session.get(url) as resp:
+        if resp.status == 200:
+            if int(resp.headers['Content-Length']) > MAX_IMAGE_SIZE:
+                return False
+            # f = await aiofiles.open(file_name, mode='wb')
+            result = await resp.read() # send to queue? send over http to classifier?
+        else:
+            return 0
+            
+    return result
+
+
+async def classify_image(image: bytes):
+    async with aiohttp.ClientSession() as session:
+        form = aiohttp.FormData()
+        form.add_field('file', image, content_type='multipart/form-data')
+        async with session.post(config.CLASSIFIER_URL, data=form) as resp:
+            if resp.status == 200:
+                result = await resp.json(encoding='utf-8') #read()
         
-    return file_name
+    return result
+
+
+# loop = asyncio.get_event_loop()
+# loop.run_until_complete(is_nsfw([URL1, URL2]))
+# loop.close()

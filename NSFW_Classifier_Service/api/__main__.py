@@ -1,23 +1,27 @@
-from fastapi import FastAPI
+from random import randint
+import aiofiles
+from fastapi import FastAPI, File
+from fastapi.datastructures import UploadFile
 from nsfw_detector import predict
 
 from functions import download_image
 from config import PORT
-import os
 import uvicorn
+import os
 
 model = predict.load_model('nsfw_detector/nsfw_model.h5')
 app = FastAPI()
 
-@app.get("/")
-async def detect_nsfw(url: str):
-    if not url:
-        return {"ERROR": "URL PARAMETER EMPTY"}
-    image = await download_image(url)
-    if not image:
-        return {"ERROR": "IMAGE SIZE TOO LARGE OR INCORRECT URL"}
-    results = predict.classify(model, image)
-    os.remove(image)
+@app.post("/")
+async def detect_nsfw(file: UploadFile = File(...)):
+    # with file.read() as image:
+    #     if not image:
+    #         return {"ERROR": "IMAGE SIZE TOO LARGE OR INCORRECT URL"}
+    file_name = await save_img(file.file)
+    results = predict.classify(model, file_name)
+
+    delete_img(file_name)
+
     hentai = results['data']['hentai']
     sexy = results['data']['sexy']
     porn = results['data']['porn']
@@ -35,6 +39,19 @@ async def detect_nsfw(url: str):
     else:
         results['data']['is_nsfw'] = False
         return results
+
+
+async def save_img(file: UploadFile) -> str:
+    file_name = f"{randint(6900, 6999)}.jpg"
+    f = await aiofiles.open(file_name, mode='wb')
+    await f.write(file.read())
+    await f.close()
+
+    return file_name
+
+
+def delete_img(file_name):
+    os.remove(file_name)
 
 if __name__ == "__main__":
     uvicorn.run(app, host="0.0.0.0", port=PORT, log_level="info")

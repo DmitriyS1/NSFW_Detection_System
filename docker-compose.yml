@@ -9,23 +9,23 @@ services:
       - 8000:8000
 
 #_Telegram_bot__________________________________________
-  ml_bot:
-    container_name: nsfw_bot
-    build: /ML_Bot/.
-    depends_on: 
-      - bot_database
+#   ml_bot:
+#     container_name: nsfw_bot
+#     build: /ML_Bot/.
+#     depends_on: 
+#       - bot_database
 
-  bot_database:
-    image: postgres:latest
-    container_name: mlbot_db
-    environment:
-      - POSTGRES_DB=ml_bot
-      - POSTGRES_USER=back
-      - POSTGRES_PASSWORD=aHR!##9887ASDsda
-    ports:
-      - 5444:5432
-    volumes:
-      - ml_bot_data:/var/lib/postgresql/data
+#   bot_database:
+#     image: postgres:latest
+#     container_name: mlbot_db
+#     environment:
+#       - POSTGRES_DB=ml_bot
+#       - POSTGRES_USER=back
+#       - POSTGRES_PASSWORD=aHR!##9887ASDsda
+#     ports:
+#       - 5444:5432
+#     volumes:
+#       - ml_bot_data:/var/lib/postgresql/data
 
-volumes:
-  ml_bot_data:
+# volumes:
+#   ml_bot_data:
