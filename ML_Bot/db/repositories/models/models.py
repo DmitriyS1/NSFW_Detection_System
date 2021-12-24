@@ -14,14 +14,9 @@ class Message(Base):
     id = Column(Integer, primary_key=True)
     text = Column(String)
     message_metadata = relationship("MessageMetadata", back_populates="message", uselist=False)
-    # username = Column(String(128), nullable=True) msg msg link link
-    # profession = Column(String(128))
-    # programming_language = Column(String)
-    # resumes = relationship("Resume", back_populates="user")
-    # state = relationship("UserState", uselist=False, backref="user_state")
-
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime)
+
 
 class MessageMetadata(Base):
     __tablename__ = "message_metadata"
@@ -43,18 +38,3 @@ class Link(Base):
     link = Column(String, index=True)
     created_at = Column(DateTime, nullable=False)
     deleted_at = Column(DateTime)
-
-    # user_id = Column(Integer, ForeignKey("user.id"), nullable=False)
-    # user = relationship("User", back_populates="resumes")
-    # link = Column(String)
-    # filename = Column(String)
-    # extension = Column(String(8))
-    # file_data = Column(BYTEA)
-
-
-# class UserState(db.Model):
-#     __tablename__ = "user_state"
-
-#     id = Column(Integer, primary_key=True)
-#     user_id = Column(Integer, ForeignKey("user.id"), nullable=False, index=True)
-#     is_questioning = Column(Boolean)
