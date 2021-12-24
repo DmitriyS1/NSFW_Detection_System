@@ -18,8 +18,6 @@ consult_bot_api_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'
 bot = Bot(token=consult_bot_api_token)
 dp = Dispatcher(bot)
 
-
-
 @dp.message_handler()
 async def send_welcome(message: types.Message):
         await message.answer('Hello! I\'m here')
