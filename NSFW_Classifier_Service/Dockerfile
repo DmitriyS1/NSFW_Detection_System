@@ -12,4 +12,4 @@ RUN pip install -r requirements.txt
 COPY . /classifier/
 EXPOSE 8000
 WORKDIR /classifier/api/
-CMD [ "python", "__main__.py" ]
+CMD [ "python3", "__main__.py" ]
