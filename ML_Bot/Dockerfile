@@ -8,8 +8,8 @@ RUN python3 -m pip install --upgrade pip
 WORKDIR /nsfw_bot/
 
 COPY requirements.txt /nsfw_bot/
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 COPY . /nsfw_bot/
 
-ENTRYPOINT [ "python", "ml_bot.py" ]
+ENTRYPOINT [ "python3", "ml_bot.py" ]

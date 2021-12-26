@@ -1,6 +1,6 @@
 import asyncio
 from aiohttp.client import ClientSession
-import config
+from image_service import config
 import aiohttp
 
 MAX_IMAGE_SIZE = config.MAX_IMAGE_SIZE * 1000000
@@ -10,6 +10,7 @@ async def is_nsfw(urls) -> bool:
     async with aiohttp.ClientSession() as session:
         for url in urls:
             image = await download_image(url, session)
+            print(url)
             if len(image) > 0:
                 result = await classify_image(image)
                 if result['data']['is_nsfw']:
@@ -21,8 +22,7 @@ async def download_image(url, session: ClientSession) -> bytes:
         if resp.status == 200:
             if int(resp.headers['Content-Length']) > MAX_IMAGE_SIZE:
                 return False
-            # f = await aiofiles.open(file_name, mode='wb')
-            result = await resp.read() # send to queue? send over http to classifier?
+            result = await resp.read()
         else:
             return 0
             
@@ -35,11 +35,6 @@ async def classify_image(image: bytes):
         form.add_field('file', image, content_type='multipart/form-data')
         async with session.post(config.CLASSIFIER_URL, data=form) as resp:
             if resp.status == 200:
-                result = await resp.json(encoding='utf-8') #read()
+                result = await resp.json(encoding='utf-8')
         
     return result
-
-
-# loop = asyncio.get_event_loop()
-# loop.run_until_complete(is_nsfw([URL1, URL2]))
-# loop.close()
