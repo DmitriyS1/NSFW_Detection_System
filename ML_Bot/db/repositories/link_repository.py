@@ -18,17 +18,25 @@ def create(message_metadata_id: int, link_text: str) -> Link:
     return link
     
 
-async def get(link_id: int) -> Link:
+def get(link_id: int) -> Link:
     session = session_factory()
-    link = await session.query(Link).filter(and_(Link.id == link_id, Link.deleted_at == None)).first()
+    link = session.query(Link).filter(and_(Link.id == link_id, Link.deleted_at == None)).first()
     session.close()
 
     return link
 
 
-async def delete(link_id: int):
+def get(link: str) -> Link:
     session = session_factory()
-    link = await session.query(Link).filter(Link.id == link_id).first()
+    link = session.query(Link).filter(and_(Link.link == link, Link.deleted_at == None)).first()
+    session.close()
+
+    return link
+
+
+def delete(link_id: int):
+    session = session_factory()
+    link = session.query(Link).filter(Link.id == link_id).first()
     if link is not None:
         link.deleted_at = datetime.now(tz=timezone.utc)
     

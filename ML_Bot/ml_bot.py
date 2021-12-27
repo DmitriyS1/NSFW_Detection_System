@@ -17,6 +17,11 @@ async def send_welcome(message: types.Message):
 
     if find_url_regex is not None:
         url = find_url_regex.group(0)
+        existed_link = link_repository.get(link=url)
+        if existed_link is not None:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            return
+
         response = requests.get(url)
         pat = re.compile(r'<img [^>]*src="([^"]+)')
         images = pat.findall(response.text)
@@ -25,9 +30,10 @@ async def send_welcome(message: types.Message):
             is_nsfw = await image_downloader.is_nsfw(images)
 
             if is_nsfw:
-                await message.delete()
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 msg = message_repository.create(message.text)
-                msg_metadata = message_metadata_repository.create(chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
+                msg_metadata = message_metadata_repository.create(
+                    chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
                 link_repository.create(msg_metadata.id, url)
 
 

@@ -17,17 +17,17 @@ def create(text: str) -> Message:
     return message
     
 
-async def get(id: int) -> Message:
+def get(id: int) -> Message:
     session = session_factory()
-    message = await session.query(Message).filter(and_(Message.id == id, Message.deleted_at == None)).first()
+    message = session.query(Message).filter(and_(Message.id == id, Message.deleted_at == None)).first()
     session.close()
 
     return message
 
 
-async def delete(id: int):
+def delete(id: int):
     session = session_factory()
-    message = await session.query(Message).filter(Message.id == id).first()
+    message = session.query(Message).filter(Message.id == id).first()
     if message is not None:
         message.deleted_at = datetime.now(tz=timezone.utc)
     
