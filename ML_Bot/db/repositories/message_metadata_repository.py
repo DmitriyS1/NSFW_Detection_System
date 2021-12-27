@@ -1,4 +1,3 @@
-from datetime import datetime, timezone
 import typing
 from db.db_session_factory import session_factory
 from db.repositories.models.models import MessageMetadata
@@ -9,8 +8,7 @@ def create(chat_id: int, msg_id: int, tg_msg_id: int, user_id: int) -> MessageMe
         chat_id = chat_id,
         msg_id = msg_id,
         tg_msg_id = tg_msg_id,
-        user_id = user_id,
-        created_at = datetime.now(tz=timezone.utc))
+        user_id = user_id)
 
     session.add(message_metadata)
     session.commit()

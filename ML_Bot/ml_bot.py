@@ -13,9 +13,6 @@ dp = Dispatcher(bot)
 
 @dp.message_handler()
 async def send_welcome(message: types.Message):
-    await message.answer('Hello! I\'m here')
-    await message_repository.create(message.text)
-
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
 
     if find_url_regex is not None:
@@ -29,12 +26,10 @@ async def send_welcome(message: types.Message):
 
             if is_nsfw:
                 await message.delete()
+                msg = message_repository.create(message.text)
+                msg_metadata = message_metadata_repository.create(chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
+                link_repository.create(msg_metadata.id, url)
 
-            # await message.answer('Your message is on moderating')
-
-        await message.answer('Didn\'t find images')
-    else:
-        await message.answer('Ok')
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)

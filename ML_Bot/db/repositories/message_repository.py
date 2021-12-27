@@ -9,7 +9,7 @@ def create(text: str) -> Message:
         text = text,
         created_at = datetime.now(tz=timezone.utc))
 
-    message = session.add(message)
+    session.add(message)
     session.commit()
     session.refresh(message)
     session.close()
