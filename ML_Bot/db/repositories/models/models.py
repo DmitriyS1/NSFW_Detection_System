@@ -24,9 +24,11 @@ class MessageMetadata(Base):
     id = Column(Integer, primary_key=True)
     chat_id = Column(Integer)
     msg_id = Column(Integer, ForeignKey("message.id"), nullable=False, index=True)
+    tg_msg_id = Column(Integer, nullable=True, index=True)
     message = relationship("Message", back_populates="message_metadata")
     user_id = Column(Integer)
     links = relationship("Link", back_populates="message_metadata")
+    is_deleted = Column(Boolean)
 
 
 class Link(Base):
