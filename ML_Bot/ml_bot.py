@@ -22,10 +22,17 @@ async def send_welcome(message: types.Message):
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             return
 
-        response = requests.get(url)
-        pat = re.compile(r'<img [^>]*src="([^"]+)')
+        response = requests.get(url, headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+        })
+
+        pat = re.compile(
+            r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
         images = pat.findall(response.text)
         images = images[:10]
+        for i, image in enumerate(images):
+            images[i] = image.replace('=', '').replace('"', '')
+
         if images:
             is_nsfw = await image_downloader.is_nsfw(images)
 

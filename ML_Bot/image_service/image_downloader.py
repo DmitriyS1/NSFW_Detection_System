@@ -1,4 +1,3 @@
-import asyncio
 from aiohttp.client import ClientSession
 from image_service import config
 import aiohttp
