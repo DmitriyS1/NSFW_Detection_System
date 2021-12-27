@@ -3,7 +3,7 @@ from db.db_session_factory import session_factory
 from db.repositories.models.models import Link
 from sqlalchemy import and_
 
-def create(message_metadata_id: int, link_text: str):
+def create(message_metadata_id: int, link_text: str) -> Link:
     session = session_factory()
     link = Link(
         message_metadata_id = message_metadata_id, 
@@ -12,7 +12,10 @@ def create(message_metadata_id: int, link_text: str):
 
     session.add(link)
     session.commit()
+    session.refresh(link)
     session.close()
+
+    return link
     
 
 async def get(link_id: int) -> Link:

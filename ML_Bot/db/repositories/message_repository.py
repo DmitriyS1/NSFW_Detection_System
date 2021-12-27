@@ -3,15 +3,18 @@ from db.db_session_factory import session_factory
 from db.repositories.models.models import Message
 from sqlalchemy import and_
 
-def create(text: str):
+def create(text: str) -> Message:
     session = session_factory()
     message = Message(
         text = text,
         created_at = datetime.now(tz=timezone.utc))
 
-    session.add(message)
+    message = session.add(message)
     session.commit()
+    session.refresh(message)
     session.close()
+
+    return message
     
 
 async def get(id: int) -> Message:

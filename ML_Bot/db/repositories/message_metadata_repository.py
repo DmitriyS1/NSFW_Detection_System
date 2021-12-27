@@ -2,9 +2,8 @@ from datetime import datetime, timezone
 import typing
 from db.db_session_factory import session_factory
 from db.repositories.models.models import MessageMetadata
-from sqlalchemy import and_
 
-def create(chat_id: int, msg_id: int, tg_msg_id: int, user_id: int):
+def create(chat_id: int, msg_id: int, tg_msg_id: int, user_id: int) -> MessageMetadata:
     session = session_factory()
     message_metadata = MessageMetadata(
         chat_id = chat_id,
@@ -15,7 +14,10 @@ def create(chat_id: int, msg_id: int, tg_msg_id: int, user_id: int):
 
     session.add(message_metadata)
     session.commit()
+    session.refresh(message_metadata)
     session.close()
+
+    return message_metadata
     
 
 async def get(id: int) -> MessageMetadata:
