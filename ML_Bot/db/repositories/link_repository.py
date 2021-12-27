@@ -22,6 +22,7 @@ async def get(link_id: int) -> Link:
 
     return link
 
+
 async def delete(link_id: int):
     session = session_factory()
     link = await session.query(Link).filter(Link.id == link_id).first()
