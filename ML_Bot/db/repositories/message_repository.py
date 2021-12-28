@@ -3,7 +3,7 @@ from db.db_session_factory import session_factory
 from db.repositories.models.models import Message
 from sqlalchemy import and_
 
-def create(text: str):
+def create(text: str) -> Message:
     session = session_factory()
     message = Message(
         text = text,
@@ -11,20 +11,23 @@ def create(text: str):
 
     session.add(message)
     session.commit()
+    session.refresh(message)
     session.close()
+
+    return message
     
 
-async def get(id: int) -> Message:
+def get(id: int) -> Message:
     session = session_factory()
-    message = await session.query(Message).filter(and_(Message.id == id, Message.deleted_at == None)).first()
+    message = session.query(Message).filter(and_(Message.id == id, Message.deleted_at == None)).first()
     session.close()
 
     return message
 
 
-async def delete(id: int):
+def delete(id: int):
     session = session_factory()
-    message = await session.query(Message).filter(Message.id == id).first()
+    message = session.query(Message).filter(Message.id == id).first()
     if message is not None:
         message.deleted_at = datetime.now(tz=timezone.utc)
     

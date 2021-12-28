@@ -1,4 +1,3 @@
-import asyncio
 from aiohttp.client import ClientSession
 from image_service import config
 import aiohttp
@@ -6,11 +5,9 @@ import aiohttp
 MAX_IMAGE_SIZE = config.MAX_IMAGE_SIZE * 1000000
 
 async def is_nsfw(urls) -> bool:
-    # make request to site and get 10 images
     async with aiohttp.ClientSession() as session:
         for url in urls:
             image = await download_image(url, session)
-            print(url)
             if len(image) > 0:
                 result = await classify_image(image)
                 if result['data']['is_nsfw']:

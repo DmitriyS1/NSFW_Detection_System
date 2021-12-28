@@ -1,17 +1,9 @@
-from datetime import datetime, timezone
-from io import BytesIO
-
 import requests
-import json
 import re
 
 from image_service import image_downloader
-
 from aiogram import Bot, Dispatcher, executor, types
-from aiogram.types.message import ContentType
-
-from pathlib import Path
-from bot_messages import BotMessages
+from db.repositories import message_repository, message_metadata_repository, link_repository
 
 consult_bot_api_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'
 
@@ -21,31 +13,36 @@ dp = Dispatcher(bot)
 
 @dp.message_handler()
 async def send_welcome(message: types.Message):
-    await message.answer('Hello! I\'m here')
-
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
 
     if find_url_regex is not None:
         url = find_url_regex.group(0)
-        await message.answer('Found urls')
-        response = requests.get(url)
-        pat = re.compile(r'<img [^>]*src="([^"]+)')
+        existed_link = link_repository.get(link=url)
+        if existed_link is not None:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            return
+
+        response = requests.get(url, headers={
+            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+        })
+
+        pat = re.compile(
+            r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
         images = pat.findall(response.text)
         images = images[:10]
-        if images:
-            await message.answer('Found pictures')
+        for i, image in enumerate(images):
+            images[i] = image.replace('=', '').replace('"', '')
 
-            # здесь сохранить в бд и отправлять дальше по конвееру
+        if images:
             is_nsfw = await image_downloader.is_nsfw(images)
 
             if is_nsfw:
-                await message.delete()
+                await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+                msg = message_repository.create(message.text)
+                msg_metadata = message_metadata_repository.create(
+                    chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
+                link_repository.create(msg_metadata.id, url)
 
-            # await message.answer('Your message is on moderating')
-
-        await message.answer('Didn\'t find images')
-    else:
-        await message.answer('Ok')
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
