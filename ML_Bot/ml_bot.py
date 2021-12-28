@@ -2,7 +2,10 @@ import requests
 import re
 
 from image_service import image_downloader
-from aiogram import Bot, Dispatcher, executor, types
+from aiogram.bot import Bot
+from aiogram.dispatcher import Dispatcher
+from aiogram.utils import executor
+from aiogram import types
 from db.repositories import message_repository, message_metadata_repository, link_repository
 
 consult_bot_api_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'
