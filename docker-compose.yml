@@ -4,14 +4,14 @@ services:
 #_Classifier____________________________________________
   nsfw_classifier_service:
     container_name: nsfw_classifier
-    build: /NSFW_Classifier_Service/.
+    build: NSFW_Classifier_Service/.
     ports:
       - 8000:8000
 
 #_Telegram_bot__________________________________________
   ml_bot:
     container_name: nsfw_bot
-    build: /ML_Bot/.
+    build: ML_Bot/.
     depends_on: 
       - bot_database
 
