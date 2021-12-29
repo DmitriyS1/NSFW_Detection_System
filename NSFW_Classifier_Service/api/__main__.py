@@ -4,7 +4,6 @@ from fastapi import FastAPI, File
 from fastapi.datastructures import UploadFile
 from nsfw_detector import predict
 
-from functions import download_image
 from config import PORT
 import uvicorn
 import os

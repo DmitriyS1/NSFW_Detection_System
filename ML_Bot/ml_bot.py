@@ -8,9 +8,9 @@ from aiogram.utils import executor
 from aiogram import types
 from db.repositories import message_repository, message_metadata_repository, link_repository
 
-consult_bot_api_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'
-
-bot = Bot(token=consult_bot_api_token)
+# bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
+bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
 
