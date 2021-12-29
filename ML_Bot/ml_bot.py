@@ -32,6 +32,8 @@ async def send_welcome(message: types.Message):
         pat = re.compile(
             r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
         images = pat.findall(response.text)
+        imagesFilter = filter(lambda url: 'icon' not in url, images)
+        images = list(imagesFilter)
         images = images[:10]
         for i, image in enumerate(images):
             images[i] = image.replace('=', '').replace('"', '')
