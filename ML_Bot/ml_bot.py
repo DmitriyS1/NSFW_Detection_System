@@ -25,21 +25,11 @@ async def send_welcome(message: types.Message):
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             return
 
-        response = requests.get(url, headers={
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-        })
+        images_links = get_image_links(url)
+        # get_avatars(photos: UserProfilePhotos)
 
-        pat = re.compile(
-            r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
-        images = pat.findall(response.text)
-        imagesFilter = filter(lambda url: 'icon' not in url, images)
-        images = list(imagesFilter)
-        images = images[:10]
-        for i, image in enumerate(images):
-            images[i] = image.replace('=', '').replace('"', '')
-
-        if images:
-            is_nsfw = await image_downloader.is_nsfw(images)
+        if images_links:
+            is_nsfw = await image_downloader.is_nsfw(images_links)
 
             if is_nsfw:
                 await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
@@ -47,6 +37,23 @@ async def send_welcome(message: types.Message):
                 msg_metadata = message_metadata_repository.create(
                     chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
                 link_repository.create(msg_metadata.id, url)
+
+
+def get_image_links(resource_url: str) -> list(str):
+    response = requests.get(resource_url, headers={
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+    })
+
+    pat = re.compile(
+        r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
+    images_links = pat.findall(response.text)
+    imageLinksFilter = filter(lambda url: 'icon' not in url, images_links)
+    images_links = list(imageLinksFilter)
+    images_links = images_links[:10]
+    for i, image in enumerate(images_links):
+        images_links[i] = image.replace('=', '').replace('"', '')
+
+    return images_links
 
 
 if __name__ == '__main__':
