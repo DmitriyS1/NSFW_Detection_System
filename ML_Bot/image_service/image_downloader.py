@@ -24,7 +24,7 @@ async def download_image(url, session: ClientSession) -> bytes:
             return 0
             
     return result
-
+    
 
 async def classify_image(image: bytes):
     async with aiohttp.ClientSession() as session:

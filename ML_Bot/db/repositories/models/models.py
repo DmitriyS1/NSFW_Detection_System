@@ -37,5 +37,6 @@ class Link(Base):
     message_metadata_id = Column(BigInteger, ForeignKey("message_metadata.id"), nullable=False)
     message_metadata = relationship("MessageMetadata", back_populates="links")
     link = Column(String, index=True)
+    is_blocked_by_avatar = Column(Boolean)
     created_at = Column(DateTime, nullable=False)
     deleted_at = Column(DateTime)

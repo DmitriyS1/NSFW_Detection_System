@@ -1,11 +1,14 @@
+from aiogram.types.user_profile_photos import UserProfilePhotos
 import requests
 import re
+from ML_Bot.db.repositories.models.models import Message
 
 from image_service import image_downloader
 from aiogram.bot import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import types
+from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository
 
 # bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
@@ -26,7 +29,6 @@ async def send_welcome(message: types.Message):
             return
 
         images_links = get_image_links(url)
-        # get_avatars(photos: UserProfilePhotos)
 
         if images_links:
             is_nsfw = await image_downloader.is_nsfw(images_links)
@@ -37,6 +39,14 @@ async def send_welcome(message: types.Message):
                 msg_metadata = message_metadata_repository.create(
                     chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
                 link_repository.create(msg_metadata.id, url)
+
+    avatars = await bot.get_user_profile_photos(user_id=message.from_user.id)
+    photo_urls = await make_avatar_links(avatars)
+    if photo_urls:
+        is_nsfw = await image_downloader.is_nsfw(photo_urls)
+
+        if is_nsfw:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 def get_image_links(resource_url: str) -> list(str):
@@ -55,6 +65,20 @@ def get_image_links(resource_url: str) -> list(str):
 
     return images_links
 
+
+async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot) -> list(str):
+    urls = list(str)
+    for photo in avatars.photos[0]:
+        file = await bot.get_file(file_id=photo.file_id)
+        urls.append(f"https://api.telegram.org/file/bot{bot_token}/{file.file_path}")
+        
+    return urls
+
+def save_info_to_db(message: TgMessage, url: str):
+    msg = message_repository.create(message.text)
+    msg_metadata = message_metadata_repository.create(
+        chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
+    link_repository.create(msg_metadata.id, url)
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
