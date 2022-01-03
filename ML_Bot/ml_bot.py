@@ -46,6 +46,7 @@ async def send_welcome(message: types.Message):
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             save_info_to_db(message, url=url, is_blocked_by_avatar=True)
 
+
 def get_image_links(resource_url: str) -> list(str):
     response = requests.get(resource_url, headers={
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
@@ -71,11 +72,13 @@ async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot) -> list(str):
         
     return urls
 
+
 def save_info_to_db(message: TgMessage, url: str, is_blocked_by_avatar: bool):
     msg = message_repository.create(message.text, is_blocked_by_avatar)
     msg_metadata = message_metadata_repository.create(
         chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
     link_repository.create(msg_metadata.id, url)
+
 
 if __name__ == '__main__':
     executor.start_polling(dp, skip_updates=True)
