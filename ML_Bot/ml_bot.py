@@ -36,6 +36,7 @@ async def send_welcome(message: types.Message):
             if is_nsfw:
                 await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 save_info_to_db(message, url, False)
+                return
 
     avatars = await bot.get_user_profile_photos(user_id=message.from_user.id)
     photo_urls = await make_avatar_links(avatars)
