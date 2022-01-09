@@ -4,14 +4,19 @@ import aiohttp
 
 MAX_IMAGE_SIZE = config.MAX_IMAGE_SIZE * 1000000
 
-async def is_nsfw(urls) -> bool:
+async def is_nsfw(urls):
+    """
+    Return type - Tuple[bool, str]
+    """
     async with aiohttp.ClientSession() as session:
         for url in urls:
             image = await download_image(url, session)
             if len(image) > 0:
                 result = await classify_image(image)
                 if result['data']['is_nsfw']:
-                    return result['data']['is_nsfw']
+                    return (result['data']['is_nsfw'], url)
+
+        return (False, "")
 
 
 async def download_image(url, session: ClientSession) -> bytes:
@@ -24,7 +29,7 @@ async def download_image(url, session: ClientSession) -> bytes:
             return 0
             
     return result
-
+    
 
 async def classify_image(image: bytes):
     async with aiohttp.ClientSession() as session:

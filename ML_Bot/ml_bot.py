@@ -1,3 +1,4 @@
+from aiogram.types.user_profile_photos import UserProfilePhotos
 import requests
 import re
 
@@ -6,6 +7,7 @@ from aiogram.bot import Bot
 from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import types
+from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository
 
 # bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
@@ -25,28 +27,71 @@ async def send_welcome(message: types.Message):
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             return
 
-        response = requests.get(url, headers={
-            "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
-        })
+        images_links = get_image_links(url)
 
-        pat = re.compile(
-            r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
-        images = pat.findall(response.text)
-        imagesFilter = filter(lambda url: 'icon' not in url, images)
-        images = list(imagesFilter)
-        images = images[:10]
-        for i, image in enumerate(images):
-            images[i] = image.replace('=', '').replace('"', '')
-
-        if images:
-            is_nsfw = await image_downloader.is_nsfw(images)
+        if images_links:
+            is_nsfw = await image_downloader.is_nsfw(images_links)
 
             if is_nsfw:
                 await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-                msg = message_repository.create(message.text)
-                msg_metadata = message_metadata_repository.create(
-                    chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
-                link_repository.create(msg_metadata.id, url)
+                save_info_to_db(message, url, False)
+                return
+
+    avatars = await bot.get_user_profile_photos(user_id=message.from_user.id)
+    photo_urls = await make_avatar_links(avatars, bot)
+    if photo_urls:
+        is_nsfw, url = await image_downloader.is_nsfw(photo_urls)
+
+        if is_nsfw:
+            await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+            save_info_to_db(message, url=url, is_blocked_by_avatar=True)
+
+
+def get_image_links(resource_url: str):
+    """
+    Return type - list(str)
+    """
+
+    response = requests.get(resource_url, headers={
+        "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
+    })
+
+    pat = re.compile(
+        r'[\=,\(][\"|\'].[^\=\"]+\.(?i:jpg|jpeg|png|bmp)[\"|\']')
+    images_links = pat.findall(response.text)
+    imageLinksFilter = filter(lambda url: 'icon' not in url, images_links)
+    images_links = list(imageLinksFilter)
+    images_links = images_links[:10]
+    for i, image in enumerate(images_links):
+        images_links[i] = image.replace('=', '').replace('"', '')
+
+    return images_links
+
+
+async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot):
+    """
+    Return type - list(str)
+    """
+    
+    urls = []
+    avatars_count = 2
+    if len(avatars.photos[0]) > avatars_count:
+        user_photos = avatars.photos[0][:avatars_count]
+    else:
+        user_photos = avatars.photos[0]
+
+    for photo in user_photos:
+        file = await bot.get_file(file_id=photo.file_id)
+        urls.append(f"https://api.telegram.org/file/bot{bot_token}/{file.file_path}")
+        
+    return urls
+
+
+def save_info_to_db(message: TgMessage, url: str, is_blocked_by_avatar: bool):
+    msg = message_repository.create(message.text, is_blocked_by_avatar)
+    msg_metadata = message_metadata_repository.create(
+        chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
+    link_repository.create(msg_metadata.id, url)
 
 
 if __name__ == '__main__':
