@@ -74,7 +74,13 @@ async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot):
     """
     
     urls = []
-    for photo in avatars.photos[0]:
+    avatars_count = 2
+    if len(avatars.photos[0]) > avatars_count:
+        user_photos = avatars.photos[0][:avatars_count]
+    else:
+        user_photos = avatars.photos[0]
+
+    for photo in user_photos:
         file = await bot.get_file(file_id=photo.file_id)
         urls.append(f"https://api.telegram.org/file/bot{bot_token}/{file.file_path}")
         
