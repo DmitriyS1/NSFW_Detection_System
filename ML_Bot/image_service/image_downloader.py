@@ -1,11 +1,13 @@
-from typing import Tuple
 from aiohttp.client import ClientSession
 from image_service import config
 import aiohttp
 
 MAX_IMAGE_SIZE = config.MAX_IMAGE_SIZE * 1000000
 
-async def is_nsfw(urls) -> Tuple[bool, str]:
+async def is_nsfw(urls):
+    """
+    Return type - Tuple[bool, str]
+    """
     async with aiohttp.ClientSession() as session:
         for url in urls:
             image = await download_image(url, session)
@@ -13,6 +15,8 @@ async def is_nsfw(urls) -> Tuple[bool, str]:
                 result = await classify_image(image)
                 if result['data']['is_nsfw']:
                     return (result['data']['is_nsfw'], url)
+
+        return (False, "")
 
 
 async def download_image(url, session: ClientSession) -> bytes:

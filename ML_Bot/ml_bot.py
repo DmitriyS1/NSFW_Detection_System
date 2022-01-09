@@ -1,7 +1,6 @@
 from aiogram.types.user_profile_photos import UserProfilePhotos
 import requests
 import re
-from ML_Bot.db.repositories.models.models import Message
 
 from image_service import image_downloader
 from aiogram.bot import Bot
@@ -39,7 +38,7 @@ async def send_welcome(message: types.Message):
                 return
 
     avatars = await bot.get_user_profile_photos(user_id=message.from_user.id)
-    photo_urls = await make_avatar_links(avatars)
+    photo_urls = await make_avatar_links(avatars, bot)
     if photo_urls:
         is_nsfw, url = await image_downloader.is_nsfw(photo_urls)
 
@@ -48,7 +47,11 @@ async def send_welcome(message: types.Message):
             save_info_to_db(message, url=url, is_blocked_by_avatar=True)
 
 
-def get_image_links(resource_url: str) -> list(str):
+def get_image_links(resource_url: str):
+    """
+    Return type - list(str)
+    """
+
     response = requests.get(resource_url, headers={
         "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/51.0.2704.103 Safari/537.36"
     })
@@ -65,8 +68,12 @@ def get_image_links(resource_url: str) -> list(str):
     return images_links
 
 
-async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot) -> list(str):
-    urls = list(str)
+async def make_avatar_links(avatars: UserProfilePhotos, bot: Bot):
+    """
+    Return type - list(str)
+    """
+    
+    urls = []
     for photo in avatars.photos[0]:
         file = await bot.get_file(file_id=photo.file_id)
         urls.append(f"https://api.telegram.org/file/bot{bot_token}/{file.file_path}")
