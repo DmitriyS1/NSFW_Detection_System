@@ -1,6 +1,6 @@
 import typing
 from db.db_session_factory import session_factory
-from db.repositories.models.models import MessageMetadata
+from db.models.message_metadata import MessageMetadata
 
 def create(chat_id: int, msg_id: int, tg_msg_id: int, user_id: int) -> MessageMetadata:
     session = session_factory()
