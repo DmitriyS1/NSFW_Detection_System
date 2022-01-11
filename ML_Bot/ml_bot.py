@@ -1,3 +1,4 @@
+from aiogram.types.message import ContentType
 from aiogram.types.user_profile_photos import UserProfilePhotos
 import requests
 import re
@@ -28,20 +29,31 @@ async def add_new_admin(message: types.Message):
     
     admin_repository.create(message.from_user.id, message.from_user.full_name)
     await bot.send_message(message.chat.id, text="Добро пожаловать!\nДобавте бота в чат, сделав администратором. Затем воспульзуйтеся командой /activate дальше все случится автоматически.\nНаслаждайтесь чистым чатом")
-    
+
 
 @dp.message_handler(commands=["activate"])
 async def activate_chat(message: types.Message):
     new_chat_id = message.chat.id
     admins = await message.chat.get_administrators()
     existed_chat = chat_repository.get(new_chat_id)
+    if existed_chat:
+        return
 
+    registered_admin = admin_repository.get(message.from_user.id)
+    if registered_admin is None:
+        return
+
+    match = (admin for admin in admins if admin.user.id == registered_admin.id)
+
+
+@dp.message_handler(content_types=ContentType.PHOTO)
+async def moderate_photo(message: types.Message):
+    #moderate any photo or list of photos
+    return
 
 @dp.message_handler()
 async def moderate_msg(message: types.Message):
-    admins = await message.chat.get_administrators()
-    match = (admin for admin in admins if admin.user.id == message.from_user.id)
-    if match is None and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
+    if not is_sent_by_admin(message) and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
         await bot.delete_message(message.chat.id, message.message_id)
 
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
@@ -118,6 +130,14 @@ def save_info_to_db(message: TgMessage, url: str, is_blocked_by_avatar: bool):
     msg_metadata = message_metadata_repository.create(
         chat_id=message.chat.id, msg_id=msg.id, tg_msg_id=message.message_id, user_id=message.from_user.id)
     link_repository.create(msg_metadata.id, url)
+
+
+async def is_sent_by_admin(message: TgMessage) -> bool:
+    admins = await message.chat.get_administrators()
+    match = (admin for admin in admins if admin.user.id == message.from_user.id)
+    
+    return match is not None
+
 
 
 if __name__ == '__main__':
