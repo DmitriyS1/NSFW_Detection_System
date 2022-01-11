@@ -8,16 +8,42 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import types
 from aiogram.types import Message as TgMessage
-from db.repositories import message_repository, message_metadata_repository, link_repository
+from db.repositories import message_repository, message_metadata_repository, link_repository, chat_repository, admin_repository
 
-# bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
-bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
+# bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
+dev_skills_fromuser_id = 136817688
+136817688
+
+
+@dp.message_handler(commands=["start"])
+async def add_new_admin(message: types.Message):
+    new_admin_id = message.from_user.id
+    existed_admin = admin_repository.get(new_admin_id)
+    if existed_admin:
+        await bot.send_message(message.chat.id, text="У вас уже есть модерируемые чаты.\n Нажмите /help для дополнительных инструкций")
+        return
+    
+    admin_repository.create(message.from_user.id, message.from_user.full_name)
+    await bot.send_message(message.chat.id, text="Добро пожаловать!\nДобавте бота в чат, сделав администратором. Затем воспульзуйтеся командой /activate дальше все случится автоматически.\nНаслаждайтесь чистым чатом")
+    
+
+@dp.message_handler(commands=["activate"])
+async def activate_chat(message: types.Message):
+    new_chat_id = message.chat.id
+    admins = await message.chat.get_administrators()
+    existed_chat = chat_repository.get(new_chat_id)
 
 
 @dp.message_handler()
-async def send_welcome(message: types.Message):
+async def moderate_msg(message: types.Message):
+    admins = await message.chat.get_administrators()
+    match = (admin for admin in admins if admin.user.id == message.from_user.id)
+    if match is None and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
+        await bot.delete_message(message.chat.id, message.message_id)
+
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
 
     if find_url_regex is not None:
