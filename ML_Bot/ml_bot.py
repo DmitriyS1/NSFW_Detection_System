@@ -11,16 +11,15 @@ from aiogram import types
 from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository, chat_repository, admin_repository
 
-bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
-# bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+# bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
+bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
-dev_skills_fromuser_id = 136817688
-136817688
 
 
 @dp.message_handler(commands=["start"])
 async def add_new_admin(message: types.Message):
+    await message.chat.get_members_count() # проверить, что пользователь в личном чате, а не в группе. А в обработчике activate проверять, что вызов в группе. Может ли в группе быть меньше 2 пользователей
     new_admin_id = message.from_user.id
     existed_admin = admin_repository.get(new_admin_id)
     if existed_admin:
@@ -36,7 +35,7 @@ async def activate_chat(message: types.Message):
     new_chat_id = message.chat.id
     admins = await message.chat.get_administrators()
     existed_chat = chat_repository.get(new_chat_id)
-    if existed_chat:
+    if not existed_chat:
         return
 
     registered_admin = admin_repository.get(message.from_user.id)
@@ -44,6 +43,9 @@ async def activate_chat(message: types.Message):
         return
 
     match = (admin for admin in admins if admin.user.id == registered_admin.id)
+    if match:
+        # add admin to chat or smth
+        return
 
 
 @dp.message_handler(content_types=ContentType.PHOTO)
@@ -53,7 +55,8 @@ async def moderate_photo(message: types.Message):
 
 @dp.message_handler()
 async def moderate_msg(message: types.Message):
-    if not is_sent_by_admin(message) and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
+    is_admin = await is_sent_by_admin(message)
+    if not is_admin and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
         await bot.delete_message(message.chat.id, message.message_id)
 
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
@@ -134,9 +137,12 @@ def save_info_to_db(message: TgMessage, url: str, is_blocked_by_avatar: bool):
 
 async def is_sent_by_admin(message: TgMessage) -> bool:
     admins = await message.chat.get_administrators()
-    match = (admin for admin in admins if admin.user.id == message.from_user.id)
+    result = False
+    for admin in admins:
+        if admin.user.id == message.from_user.id:
+            result = True
     
-    return match is not None
+    return result
 
 
 
