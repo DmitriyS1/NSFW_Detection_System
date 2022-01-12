@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from db.db_session_factory import session_factory
-from db.repositories.models.models import Message
+from db.models.message import Message
 from sqlalchemy import and_
 
 def create(text: str, is_blocked_by_avatar: bool) -> Message:

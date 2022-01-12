@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from db.db_session_factory import session_factory
-from db.repositories.models.models import Link
+from db.models.link import Link
 from sqlalchemy import and_
 
 def create(message_metadata_id: int, link_text: str) -> Link:
