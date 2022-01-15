@@ -11,23 +11,25 @@ from aiogram import types
 from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository, chat_repository, admin_repository
 
-# bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
-bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
+# bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
 
 @dp.message_handler(commands=["start"])
 async def add_new_admin(message: types.Message):
-    await message.chat.get_members_count() # проверить, что пользователь в личном чате, а не в группе. А в обработчике activate проверять, что вызов в группе. Может ли в группе быть меньше 2 пользователей
+    members_count = await message.chat.get_members_count() # проверить, что пользователь в личном чате, а не в группе. А в обработчике activate проверять, что вызов в группе. Может ли в группе быть меньше 2 пользователей
+    if members_count > 2:
+        return # log info about chat and user
     new_admin_id = message.from_user.id
     existed_admin = admin_repository.get(new_admin_id)
     if existed_admin:
         await bot.send_message(message.chat.id, text="У вас уже есть модерируемые чаты.\n Нажмите /help для дополнительных инструкций")
         return
     
-    admin_repository.create(message.from_user.id, message.from_user.full_name)
-    await bot.send_message(message.chat.id, text="Добро пожаловать!\nДобавте бота в чат, сделав администратором. Затем воспульзуйтеся командой /activate дальше все случится автоматически.\nНаслаждайтесь чистым чатом")
+    admin_repository.create(message.from_user.id, message.from_user.full_name, message.chat.id)
+    await bot.send_message(message.chat.id, text="Добро пожаловать!\nДобавте бота в чат, сделав администратором. Затем выполните команду /activate в вашем чате. Дальше все случится автоматически.\nНаслаждайтесь чистым чатом")
 
 
 @dp.message_handler(commands=["activate"])

@@ -10,6 +10,7 @@ class Admin(Base):
 
     id = Column(BigInteger, primary_key=True)
     name = Column(String)
-
+    personal_chat_id = Column(BigInteger, nullable=False)
+    groups = relationship("Group")
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime)

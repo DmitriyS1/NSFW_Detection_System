@@ -4,11 +4,12 @@ from db.db_session_factory import session_factory
 from sqlalchemy import and_
 
 
-def create(id: int, name: str) -> Admin:
+def create(id: int, name: str, personal_chat_id: int) -> Admin:
     session = session_factory()
     admin = Admin(
         id=id,
         name=name,
+        personal_chat_id=personal_chat_id,
         created_at=datetime.now(tz=timezone.utc)
     )
 

@@ -13,7 +13,7 @@ class Message(Base):
     text = Column(String)
     message_metadata_id = Column(BigInteger, ForeignKey("message_metadata.id"), nullable=False)
     message_metadata = relationship(
-        "MessageMetadata", back_populates="message", uselist=False)
+        "MessageMetadata", back_populates="message")
     is_blocked_by_avatar = Column(Boolean)
     created_at = Column(DateTime, nullable=False)
     updated_at = Column(DateTime)

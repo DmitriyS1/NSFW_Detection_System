@@ -13,7 +13,7 @@ class MessageMetadata(Base):
     msg_id = Column(BigInteger, ForeignKey(
         "message.id"), nullable=False, index=True)
     tg_msg_id = Column(BigInteger, nullable=True, index=True)
-    message = relationship("Message", back_populates="message_metadata")
+    message = relationship("Message", back_populates="message_metadata", uselist=False)
     user_id = Column(BigInteger)
     links = relationship("Link", back_populates="message_metadata")
     is_deleted = Column(Boolean)
