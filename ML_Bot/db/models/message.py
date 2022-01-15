@@ -11,7 +11,7 @@ class Message(Base):
 
     id = Column(BigInteger, primary_key=True)
     text = Column(String)
-    message_metadata_id = Column(BigInteger, ForeignKey("message_metadata.id"), nullable=False)
+    message_metadata_id = Column(BigInteger, ForeignKey("message_metadata.id"), nullable=True)
     message_metadata = relationship(
         "MessageMetadata", back_populates="message")
     is_blocked_by_avatar = Column(Boolean)
