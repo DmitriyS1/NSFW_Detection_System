@@ -9,7 +9,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import types
 from aiogram.types import Message as TgMessage
-from db.repositories import message_repository, message_metadata_repository, link_repository, chat_repository, admin_repository
+from db.repositories import message_repository, message_metadata_repository, link_repository, group_repository, admin_repository
 
 bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
 # bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
@@ -36,7 +36,7 @@ async def add_new_admin(message: types.Message):
 async def activate_chat(message: types.Message):
     new_chat_id = message.chat.id
     admins = await message.chat.get_administrators()
-    existed_chat = chat_repository.get(new_chat_id)
+    existed_chat = group_repository.get(new_chat_id)
     if not existed_chat:
         return
 
