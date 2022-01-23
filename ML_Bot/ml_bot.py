@@ -34,10 +34,14 @@ async def add_new_admin(message: types.Message):
 
 @dp.message_handler(commands=["activate"])
 async def activate_chat(message: types.Message):
+    members_count = await message.chat.get_members_count()
+    if members_count < 5:
+        return
+
     new_chat_id = message.chat.id
     admins = await message.chat.get_administrators()
     existed_chat = group_repository.get(new_chat_id)
-    if not existed_chat:
+    if existed_chat:
         return
 
     registered_admin = admin_repository.get(message.from_user.id)
@@ -47,6 +51,8 @@ async def activate_chat(message: types.Message):
     match = (admin for admin in admins if admin.user.id == registered_admin.id)
     if match:
         # add admin to chat or smth
+        group_repository.create(new_chat_id, registered_admin.id, message.chat.full_name)
+        
         return
 
 
@@ -58,7 +64,7 @@ async def moderate_photo(message: types.Message):
 @dp.message_handler()
 async def moderate_msg(message: types.Message):
     is_admin = await is_sent_by_admin(message)
-    if not is_admin and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel" or message.from_user.mention == "@Channel_Bot"):
+    if not is_admin and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel"):
         await bot.delete_message(message.chat.id, message.message_id)
 
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
