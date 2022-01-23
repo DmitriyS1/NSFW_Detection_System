@@ -6,7 +6,7 @@ from . import Base
 
 
 class Group(Base):
-    __tablename__ = "chat"
+    __tablename__ = "group"
 
     id = Column(BigInteger, primary_key=True)
     admin_id = Column(BigInteger, ForeignKey("admin.id"), index=True,)
