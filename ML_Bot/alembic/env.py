@@ -1,7 +1,7 @@
 from logging.config import fileConfig
-from db.models import Base
+from db.models import admin, message, message_metadata, group, link
 
-from sqlalchemy import engine_from_config
+from sqlalchemy import engine_from_config, MetaData
 from sqlalchemy import pool
 
 from alembic import context
@@ -18,11 +18,18 @@ config.set_section_option(section, "DB_PASS", "aHR!##9887ASDsda")
 # This line sets up loggers basically.
 fileConfig(config.config_file_name)
 
+def init_metadata(*args):
+    m = MetaData()
+    for metadata in args:
+        for t in metadata.tables.values():
+            t.tometadata(m)
+    return m
+
 # add your model's MetaData object here
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = Base.metadata
+target_metadata = init_metadata(admin.Base.metadata, group.Base.metadata, message.Base.metadata, message_metadata.Base.metadata, link.Base.metadata)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

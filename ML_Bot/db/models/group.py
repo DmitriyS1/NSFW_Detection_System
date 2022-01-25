@@ -5,11 +5,11 @@ from sqlalchemy.sql.sqltypes import Boolean, DateTime
 from . import Base
 
 
-class Chat(Base):
-    __tablename__ = "chat"
+class Group(Base):
+    __tablename__ = "group"
 
     id = Column(BigInteger, primary_key=True)
-    admin_id = Column(BigInteger, index=True)
+    admin_id = Column(BigInteger, ForeignKey("admin.id"), index=True,)
     is_moderation_active = Column(Boolean, nullable=False)
     name = Column(String)
-    
+    created_at = Column(DateTime, nullable=False)
