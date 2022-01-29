@@ -2,6 +2,7 @@
 *.png
 *.webp
 *.tmp
+env/
 
 __pycache__
 .vscode
