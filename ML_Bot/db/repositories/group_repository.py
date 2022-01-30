@@ -12,7 +12,8 @@ def create(chat_id: int, admin_id: int, name: str) -> Group:
         id=chat_id,
         admin_id=admin_id,
         name=name,
-        is_moderation_active=False
+        is_moderation_active=False,
+        created_at=datetime.now(tz=timezone.utc)
     )
 
     session.add(chat)
