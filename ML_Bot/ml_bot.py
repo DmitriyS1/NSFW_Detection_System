@@ -35,8 +35,8 @@ async def add_new_admin(message: types.Message):
 @dp.message_handler(commands=["activate"])
 async def activate_chat(message: types.Message):
     members_count = await message.chat.get_members_count()
-    if members_count < 5:
-        return
+    # if members_count < 5:
+    #     return
 
     new_chat_id = message.chat.id
     admins = await message.chat.get_administrators()
