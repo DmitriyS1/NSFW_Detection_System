@@ -6,3 +6,4 @@ tensorflow
 tensorflow-hub
 pillow
 python-multipart
+mangum
