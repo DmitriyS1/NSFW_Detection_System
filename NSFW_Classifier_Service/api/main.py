@@ -5,7 +5,7 @@ from fastapi.datastructures import UploadFile
 from nsfw_detector import predict
 
 from config import PORT
-import uvicorn
+from mangum import Mangum
 import os
 
 model = predict.load_model('nsfw_detector/nsfw_model.h5')
@@ -52,5 +52,4 @@ async def save_img(file: UploadFile) -> str:
 def delete_img(file_name):
     os.remove(file_name)
 
-if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=PORT, log_level="info")
+handler = Mangum(app)
