@@ -3,13 +3,8 @@ name: 'CI/CD Pipeline for NSFW Service'
 on:
   push:
     branches: [ main ]
-    paths: 
-      - 'NSFW_Classifier_Service'
-
-  pull_request:
-    branches: [ main ]
-    paths: 
-      - 'NSFW_Classifier_Service'
+    tags: 
+      - 'nsfw-service-v*'
       
 jobs:
   ci-classifier-service:
