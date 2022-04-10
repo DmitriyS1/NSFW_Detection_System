@@ -3,8 +3,6 @@ import aiofiles
 from fastapi import FastAPI, File
 from fastapi.datastructures import UploadFile
 from nsfw_detector import predict
-
-from config import PORT
 from mangum import Mangum
 import os
 
@@ -47,7 +45,6 @@ async def save_img(file: UploadFile) -> str:
     await f.close()
 
     return file_name
-
 
 def delete_img(file_name):
     os.remove(file_name)
