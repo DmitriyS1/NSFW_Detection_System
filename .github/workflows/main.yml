@@ -15,8 +15,8 @@ jobs:
     - name: Set up Python
       uses: actions/setup-python@v2
       with:
-        python-version: "3.7"
-        architecture: "amd64"
+        python-version: "3.7.12"
+        architecture: "x64"
     # Step 3
     - name: Install Python Virtual Environment
       run: pip3 install virtualenv
