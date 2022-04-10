@@ -52,5 +52,4 @@ async def save_img(file: UploadFile) -> str:
 def delete_img(file_name):
     os.remove(file_name)
 
-
 handler = Mangum(app)

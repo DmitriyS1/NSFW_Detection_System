@@ -7,6 +7,7 @@ jobs:
   ci-classifier-service:
     runs-on: ubuntu-latest
     steps:
+    
       # Step 1
       - uses: actions/checkout@v2
 
@@ -55,5 +56,5 @@ jobs:
           name: api
           path: nsfw-service.zip
 
-  cd:
+  #cd:
 
