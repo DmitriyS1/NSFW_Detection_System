@@ -3,6 +3,8 @@ import aiofiles
 from fastapi import FastAPI, File
 from fastapi.datastructures import UploadFile
 from nsfw_detector import predict
+
+from config import PORT
 from mangum import Mangum
 import os
 
