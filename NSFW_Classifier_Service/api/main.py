@@ -48,7 +48,6 @@ async def save_img(file: UploadFile) -> str:
 
     return file_name
 
-
 def delete_img(file_name):
     os.remove(file_name)
 

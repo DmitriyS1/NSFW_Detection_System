@@ -5,6 +5,12 @@ on:
     branches: [ main ]
     paths: 
       - 'NSFW_Classifier_Service'
+
+  pull_request:
+    branches: [ main ]
+    paths: 
+      - 'NSFW_Classifier_Service'
+      
 jobs:
   ci-classifier-service:
     runs-on: ubuntu-latest
