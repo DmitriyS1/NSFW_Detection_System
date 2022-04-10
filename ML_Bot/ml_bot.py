@@ -1,5 +1,6 @@
 from aiogram.types.message import ContentType
 from aiogram.types.user_profile_photos import UserProfilePhotos
+import logging
 import requests
 import re
 
@@ -16,6 +17,7 @@ bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (te
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
+logger = logging.getLogger(__name__)
 
 @dp.message_handler(commands=["start"])
 async def add_new_admin(message: types.Message):
