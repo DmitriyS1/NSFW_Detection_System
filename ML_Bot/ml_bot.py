@@ -12,8 +12,8 @@ from aiogram import types
 from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository, group_repository, admin_repository
 
-bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
-# bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+# bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
+bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
