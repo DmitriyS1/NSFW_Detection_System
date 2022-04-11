@@ -2,7 +2,7 @@ from random import randint
 import aiofiles
 from fastapi import FastAPI, File
 from fastapi.datastructures import UploadFile
-from nsfw_detector import predict
+from .nsfw_detector import predict
 
 from mangum import Mangum
 import os
