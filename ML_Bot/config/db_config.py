@@ -6,14 +6,13 @@ import yaml
 class postgre_config:
     def __init__(self):
         with open("config.yml", "r") as ymlfile:
-            cfg = yaml.load(ymlfile)["database"]
+            cfg = yaml.load(ymlfile, yaml.BaseLoader)["database"]
             self.dbname = cfg["db-name"]
             self.host = cfg["host"]
             self.port = cfg["port"]
             self.user = cfg["user"]
             self.password = cfg["password"]
         
-        return self
 
     host: str
     port: int
