@@ -1,0 +1,6 @@
+database:
+  host: database-nsfw-prod.cdlt3gh42ady.eu-west-2.rds.amazonaws.com
+  user: nsfw_admin
+  password: aHR!##9887ASDsda
+  db-name: NSFWBotDatabase
+  port: 5444
