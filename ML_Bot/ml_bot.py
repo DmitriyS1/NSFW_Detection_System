@@ -10,7 +10,7 @@ from aiogram.dispatcher import Dispatcher
 from aiogram.utils import executor
 from aiogram import types
 from aiogram.types import Message as TgMessage
-from db.repositories import message_repository, message_metadata_repository, link_repository, group_repository, admin_repository
+from db.repositories import message_repository, message_metadata_repository, link_repository, group_repository, admin_repository, temp_admin_repository
 
 # bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
 bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
@@ -24,38 +24,23 @@ async def add_new_admin(message: types.Message):
     members_count = await message.chat.get_members_count() # проверить, что пользователь в личном чате, а не в группе. А в обработчике activate проверять, что вызов в группе. Может ли в группе быть меньше 2 пользователей
     if members_count > 2:
         return # log info about chat and user
+
     new_admin_id = message.from_user.id
-    existed_admin = admin_repository.get(new_admin_id)
-    if existed_admin:
-        await bot.send_message(message.chat.id, text="У вас уже есть модерируемые чаты.\n Нажмите /help для дополнительных инструкций")
-        return
-    
-    admin_repository.create(message.from_user.id, message.from_user.full_name, message.chat.id)
-    await bot.send_message(message.chat.id, text="Добро пожаловать!\nДобавте бота в чат, сделав администратором. Затем выполните команду /activate в вашем чате. Дальше все случится автоматически.\nНаслаждайтесь чистым чатом")
-
-
-@dp.message_handler(commands=["activate"])
-async def activate_chat(message: types.Message):
-    members_count = await message.chat.get_members_count()
-    if members_count < 5:
-        return
-
-    new_chat_id = message.chat.id
-    admins = await message.chat.get_administrators()
-    existed_chat = group_repository.get(new_chat_id)
-    if existed_chat:
-        return
-
-    registered_admin = admin_repository.get(message.from_user.id)
-    if registered_admin is None:
-        return
-
-    match = (admin for admin in admins if admin.user.id == registered_admin.id)
-    if match:
-        # add admin to chat or smth
-        group_repository.create(new_chat_id, registered_admin.id, message.chat.full_name)
+    personal_chat_id = message.chat.id
+    existed_temp_admin = temp_admin_repository.get(new_admin_id)
+    if existed_temp_admin:
+        existed_admin = admin_repository.get(new_admin_id)
+        if not existed_admin:
+            existed_admin = admin_repository.create(existed_temp_admin.id, existed_temp_admin.name, personal_chat_id)
         
+        chat = group_repository.update(existed_temp_admin.chat_id, existed_admin.id)
+
+        await bot.send_message(message.chat.id, text=f"Вы успешно зарегистрировали чат {chat.name}. Защита от спама активна.")
         return
+    else:
+        await bot.send_message(message.chat.id, text=f"Видимо чат еще не обнаружен ботом. Если вы уже добавили бота в ваш чат, попробуйте снова вызвать /start через 10 минут")
+        return
+
 
 
 @dp.message_handler(content_types=ContentType.PHOTO)
@@ -65,6 +50,7 @@ async def moderate_photo(message: types.Message):
 
 @dp.message_handler()
 async def moderate_msg(message: types.Message):
+
     is_admin = await is_sent_by_admin(message)
     if not is_admin and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel"):
         await bot.delete_message(message.chat.id, message.message_id)
