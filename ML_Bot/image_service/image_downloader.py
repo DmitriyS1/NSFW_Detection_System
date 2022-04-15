@@ -35,7 +35,7 @@ async def classify_image(image: bytes):
     async with aiohttp.ClientSession() as session:
         form = aiohttp.FormData()
         form.add_field('file', image, content_type='multipart/form-data')
-        async with session.post(config.CLASSIFIER_URL_local, data=form) as resp:
+        async with session.post(config.CLASSIFIER_URL, data=form) as resp:
             if resp.status == 200:
                 result = await resp.json(encoding='utf-8')
         
