@@ -3,7 +3,8 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from config import db_config
 
-engine = create_engine('postgresql+psycopg2://back:aHR!##9887ASDsda@bot_database:5432/ml_bot')
+engine = create_engine(
+    'postgresql+psycopg2://nsfw_admin:aHR!##9887ASDsda@database-nsfw-prod.cdlt3gh42ady.eu-west-2.rds.amazonaws.com:5444/NSFWBotDatabase')
 # engine = create_engine(
 #     'postgresql+psycopg2://back:aHR!##9887ASDsda@localhost:5432/ml_bot')
 

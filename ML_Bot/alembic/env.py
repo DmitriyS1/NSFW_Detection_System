@@ -1,5 +1,5 @@
 from logging.config import fileConfig
-from db.models import admin, message, message_metadata, group, link
+from db.models import admin, message, message_metadata, group, link, temp_admin
 
 from sqlalchemy import engine_from_config, MetaData
 from sqlalchemy import pool
@@ -11,7 +11,6 @@ import os
 config = context.config
 
 section = config.config_ini_section
-print("User: ", os.environ.get("POSTGRE_USER"))
 config.set_section_option(section, "DB_USER", "nsfw_admin")
 config.set_section_option(section, "DB_PASS", "aHR!##9887ASDsda")
 config.set_section_option(
@@ -34,7 +33,13 @@ def init_metadata(*args):
 # for 'autogenerate' support
 # from myapp import mymodel
 # target_metadata = mymodel.Base.metadata
-target_metadata = init_metadata(admin.Base.metadata, group.Base.metadata, message.Base.metadata, message_metadata.Base.metadata, link.Base.metadata)
+target_metadata = init_metadata(
+    admin.Base.metadata, 
+    group.Base.metadata, 
+    message.Base.metadata, 
+    message_metadata.Base.metadata, 
+    link.Base.metadata, 
+    temp_admin.Base.metadata)
 
 # other values from the config, defined by the needs of env.py,
 # can be acquired:

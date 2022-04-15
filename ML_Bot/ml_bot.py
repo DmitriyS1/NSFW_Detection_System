@@ -13,7 +13,7 @@ from aiogram.types import Message as TgMessage
 from db.repositories import message_repository, message_metadata_repository, link_repository, group_repository, admin_repository, temp_admin_repository
 
 # bot_token = '2140772750:AAHQCi_kfi10zTCHDFs1bghEpeLJhQP7CRI'  # Consulting4d (test bot)
-bot_token = '5035659135:AAGGzpwziuAA1IQACwIMp32zbBQ943cbXjc'  # Production Bot
+bot_token = '5368832576:AAFkyI9Cm37nU5aoaK8iBgeIOh1liAZ3cn8'  # Production Bot
 bot = Bot(token=bot_token)
 dp = Dispatcher(bot)
 
@@ -54,6 +54,9 @@ async def moderate_msg(message: types.Message):
     if not group:
         admins = await message.chat.get_administrators()
         for admin in admins:
+            if admin.user.is_bot:
+                continue
+            
             temp_admin_repository.create(admin.user.id, f"{admin.user.first_name} {admin.user.last_name}", message.chat.id)
         
         group_repository.create(message.chat.id, None, message.chat.full_name)
