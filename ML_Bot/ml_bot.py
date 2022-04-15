@@ -33,7 +33,7 @@ async def add_new_admin(message: types.Message):
         if not existed_admin:
             existed_admin = admin_repository.create(existed_temp_admin.id, existed_temp_admin.name, personal_chat_id)
         
-        chat = group_repository.update(existed_temp_admin.chat_id, existed_admin.id)
+        chat = group_repository.update(existed_temp_admin.chat_id, existed_admin.id, True)
 
         await bot.send_message(message.chat.id, text=f"Вы успешно зарегистрировали чат {chat.name}. Защита от спама активна.")
         return
@@ -50,10 +50,22 @@ async def moderate_photo(message: types.Message):
 
 @dp.message_handler()
 async def moderate_msg(message: types.Message):
+    group = group_repository.get(message.chat.id)
+    if not group:
+        admins = await message.chat.get_administrators()
+        for admin in admins:
+            temp_admin_repository.create(admin.user.id, f"{admin.user.first_name} {admin.user.last_name}", message.chat.id)
+        
+        group_repository.create(message.chat.id, None, message.chat.full_name)
+        return
+    elif not group.is_moderation_active:
+        return
+    
 
     is_admin = await is_sent_by_admin(message)
     if not is_admin and (message.from_user.first_name == "Channel" or message.from_user.full_name == "Channel"):
         await bot.delete_message(message.chat.id, message.message_id)
+        return
 
     find_url_regex = re.search("(?P<url>https?://[^\s]+)", message.text)
 
@@ -68,7 +80,6 @@ async def moderate_msg(message: types.Message):
 
         if images_links:
             is_nsfw = await image_downloader.is_nsfw(images_links)
-
             if is_nsfw:
                 await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
                 save_info_to_db(message, url, False)
@@ -78,7 +89,6 @@ async def moderate_msg(message: types.Message):
     photo_urls = await make_avatar_links(avatars, bot)
     if photo_urls:
         is_nsfw, url = await image_downloader.is_nsfw(photo_urls)
-
         if is_nsfw:
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             save_info_to_db(message, url=url, is_blocked_by_avatar=True)
