@@ -5,14 +5,19 @@ from sqlalchemy import engine_from_config, MetaData
 from sqlalchemy import pool
 
 from alembic import context
-
+import os
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
 
 section = config.config_ini_section
-config.set_section_option(section, "DB_USER", "back")
+print("User: ", os.environ.get("POSTGRE_USER"))
+config.set_section_option(section, "DB_USER", "nsfw_admin")
 config.set_section_option(section, "DB_PASS", "aHR!##9887ASDsda")
+config.set_section_option(
+    section, "DB_HOST", "database-nsfw-prod.cdlt3gh42ady.eu-west-2.rds.amazonaws.com")
+config.set_section_option(section, "DB_PORT", "5444")
+config.set_section_option(section, "DB_NAME", "NSFWBotDatabase")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.

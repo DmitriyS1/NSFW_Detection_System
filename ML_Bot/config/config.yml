@@ -1,6 +1,6 @@
-database:
-  host: database-nsfw-prod.cdlt3gh42ady.eu-west-2.rds.amazonaws.com
-  user: nsfw_admin
-  password: aHR!##9887ASDsda
-  db-name: NSFWBotDatabase
-  port: 5444
+DATABASE:
+  POSTGRE_HOST: database-nsfw-prod.cdlt3gh42ady.eu-west-2.rds.amazonaws.com
+  POSTGRE_USER: nsfw_admin
+  POSTGRE_PASSWORD: aHR!##9887ASDsda
+  POSTGRE_NAME: NSFWBotDatabase
+  POSTGRE_PORT: 5444
