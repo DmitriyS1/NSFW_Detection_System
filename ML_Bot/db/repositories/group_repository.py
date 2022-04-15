@@ -33,3 +33,25 @@ def get(id: int) -> Group:
 
     return chat
 
+def update(id: int, new_admin_id: int, is_moderation_active: bool) -> Group:
+    '''
+    Returns - updated Chat object
+    '''
+    session = session_factory()
+    chat = session.query(Group).filter(Group.id==id).first()
+    chat.admin_id = new_admin_id
+    chat.is_moderation_active = is_moderation_active
+    session.commit()
+    session.refresh(chat)
+
+    return chat
+
+def is_exists(id: int) -> bool:
+    '''
+    Returns - True if Chat exists
+    '''
+    session = session_factory()
+    chat = session.query(Group).filter(Group.id==id).first()
+    session.close()
+
+    return chat is not None

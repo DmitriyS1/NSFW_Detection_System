@@ -20,7 +20,6 @@ def create(id: int, name: str, personal_chat_id: int) -> Admin:
 
     return admin
 
-
 def get(admin_id: int) -> Admin:
     session = session_factory()
     admin = session.query(Admin).filter(Admin.id == admin_id).first()

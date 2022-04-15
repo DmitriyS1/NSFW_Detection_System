@@ -9,7 +9,8 @@ class Admin(Base):
     __tablename__ = "admin"
 
     id = Column(BigInteger, primary_key=True)
-    name = Column(String)
+    name = Column(String(128))
+    username = Column(String(128))
     personal_chat_id = Column(BigInteger, nullable=False)
     groups = relationship("Group")
     created_at = Column(DateTime, nullable=False)

@@ -3,6 +3,7 @@
 *.webp
 *.tmp
 env/
+venv/
 
 __pycache__
 .vscode
