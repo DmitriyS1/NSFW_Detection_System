@@ -12,7 +12,7 @@ config = context.config
 
 section = config.config_ini_section
 config.set_section_option(section, "DB_USER", "back")
-config.set_section_option(section, "DB_PASS", "aHR!##9887ASDsda")
+config.set_section_option(section, "DB_PASS", "pswd")
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
