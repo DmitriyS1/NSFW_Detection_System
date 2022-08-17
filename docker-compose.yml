@@ -21,7 +21,7 @@ services:
     environment:
       - POSTGRES_DB=ml_bot
       - POSTGRES_USER=back
-      - POSTGRES_PASSWORD=aHR!##9887ASDsda
+      - POSTGRES_PASSWORD=pswd
     ports:
       - 5444:5432
     volumes:
